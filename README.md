@@ -16,7 +16,7 @@ Features
 * Shows latency on the tablist
 * Support for colored names
 
-Future Features
+Planned Features
 =======
 * Autokick based on measured latency
 * Configurable and colored measures
