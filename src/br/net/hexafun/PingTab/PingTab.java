@@ -31,7 +31,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 		try {
 			MetricsLite metrics = new MetricsLite(this);
 			metrics.start();
-			getLogger().warning(
+			getLogger().info(
 					(new StringBuilder("Plugin metrics enabled!")).toString());
 		} catch (IOException ioexception) {
 			getLogger().warning(
