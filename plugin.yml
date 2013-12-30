@@ -1,4 +1,4 @@
 name: PingTab
-main: br.hexafun.PingTab.PingTab
+main: br.net.hexafun.PingTab.PingTab
 version: 1.0
 authors: [Slartbartfast]

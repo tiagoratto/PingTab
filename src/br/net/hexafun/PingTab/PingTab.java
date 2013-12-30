@@ -1,6 +1,5 @@
 package br.net.hexafun.PingTab;
 
-
 import java.io.File;
 import java.io.IOException;
 
@@ -32,11 +31,11 @@ public final class PingTab extends JavaPlugin implements Listener {
 		try {
 			MetricsLite metrics = new MetricsLite(this);
 			metrics.start();
+			getLogger().warning(
+					(new StringBuilder("Plugin metrics enabled!")).toString());
 		} catch (IOException ioexception) {
-			getLogger()
-					.warning(
-							(new StringBuilder("MetricsLite failed!"))
-									.toString());
+			getLogger().warning(
+					(new StringBuilder("Plugin netrics failed!")).toString());
 		}
 
 		getServer().getPluginManager().registerEvents(this, this);
@@ -97,11 +96,9 @@ public final class PingTab extends JavaPlugin implements Listener {
 									.getScore(player).setScore(ping);
 						}
 					} else {
-						getLogger()
-								.warning(
-										(new StringBuilder(
-												"Objective IS NULL"))
-												.toString());
+						getLogger().warning(
+								(new StringBuilder("Objective IS NULL"))
+										.toString());
 					}
 				}
 
