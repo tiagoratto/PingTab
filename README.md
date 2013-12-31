@@ -20,3 +20,8 @@ Planned Features
 =======
 * Autokick based on measured latency
 * Configurable and colored measures
+* ICMP latency measurements
+* /ping [player|self] command
+* Permissions for /ping command
+* List players on tab based on radius and or limits for big servers
+* List players order by own faction, enemy factions, other factions and lonewolves
