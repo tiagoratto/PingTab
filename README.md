@@ -1,6 +1,4 @@
 ![PingTab](http://dev.bukkit.org/media/images/67/252/PINGTAB_logo.png)
-
-PingTab
 =======
 
 Show players latency on the tablist
