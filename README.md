@@ -1,4 +1,4 @@
-PingTab
+![PingTab](http://dev.bukkit.org/media/images/67/252/PINGTAB_logo.png)
 =======
 
 Show players latency on the tablist
@@ -16,7 +16,12 @@ Features
 * Shows latency on the tablist
 * Support for colored names
 
-Future Features
+Planned Features
 =======
 * Autokick based on measured latency
 * Configurable and colored measures
+* ICMP latency measurements
+* /ping [player|self] command
+* Permissions for /ping command
+* List players on tab based on radius and or limits for big servers
+* List players order by own faction, enemy factions, other factions and lonewolves
