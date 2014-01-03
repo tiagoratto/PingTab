@@ -1,4 +1,22 @@
 name: PingTab
 main: br.net.hexafun.PingTab.PingTab
-version: 1.0
-authors: [Slartbartfast]
+version: 1.1
+authors: [tiagoratto]
+commands:
+  ping:
+    description: Ping yourself or a player
+    usage: /ping [player]
+    permission: pingtab.ping
+    permission-message: You don't have <permission>
+permissions:
+  pingtab.*:
+    description: Gives access to all pingtab features
+    children:
+      pingtab.showscoreboard: true
+      pingtab.ping: true
+  pingtab.showscoreboard:
+    description: Allow a user to show the PingTab scoreboard
+    default: true
+  pingtab.ping:
+    description: Ping a player or yourself
+    default: true
