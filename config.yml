@@ -23,3 +23,10 @@ AlertThreshold: 500
 
 # AlertInterval: The interval, in minutes, for the alerts to be sent
 AlertInterval: 5
+
+# AlertMessage: The message that will be sent to the user on the alert event.
+#               Color codes are supported.
+#               Parameters: %playername - Player Name
+#                           %ping - Ping Measured
+#                           %threshold - Threshold Set
+AlertMessage: "%playername, your latency is %ping is above %threshold!"

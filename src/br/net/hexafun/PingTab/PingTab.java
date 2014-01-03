@@ -31,6 +31,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 	private int mediumPing = 500; // Default OrangePing value
 	protected boolean enabledByDefault = false;
 	protected int alertThreshold = 500;
+	protected String alertMessage;
 
 	public PingTab() {
 		super();
@@ -51,6 +52,16 @@ public final class PingTab extends JavaPlugin implements Listener {
 		}
 
 		return ret;
+	}
+
+	protected String formatAlertMessage(String msg, int ping, Player player,
+			int threshold) {
+		msg = msg.replaceAll("%ping", new StringBuilder(""+ping).toString());
+		msg = msg.replaceAll("%playername", player.getName());
+		msg = msg.replaceAll("%threshold",new StringBuilder(""+threshold).toString());
+		msg = ChatColor.translateAlternateColorCodes('&', msg);
+
+		return msg;
 	}
 
 	public void onEnable() {
@@ -111,6 +122,15 @@ public final class PingTab extends JavaPlugin implements Listener {
 			alertThreshold = 500;
 		}
 
+		if (config.isString("AlertMessage")) {
+			alertMessage = config.getString("AlertMessage");
+		} else {
+			alertMessage = (new StringBuilder(" Your latency of "
+					+ ChatColor.DARK_RED + ChatColor.BOLD + "%p"
+					+ ChatColor.RESET + ChatColor.DARK_RED + " is too high!"
+					+ ChatColor.RESET).toString());
+		}
+
 		// Create the Scoreboard and assign an dummy objective to it
 		PingScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 		NormalScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -140,6 +160,9 @@ public final class PingTab extends JavaPlugin implements Listener {
 							for (int i = 0; i < j; i++) {
 								Player player = players[i];
 								int ping = ((CraftPlayer) player).getHandle().ping;
+								String formatedAlertMessage = formatAlertMessage(
+										alertMessage, ping, player,
+										alertThreshold);
 
 								if (ping > alertThreshold) {
 									player.sendMessage((new StringBuilder(""
@@ -148,13 +171,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 											.append("[PingTab]"
 													+ ChatColor.RESET
 													+ ChatColor.DARK_RED)
-											.append(" Your latency of "
-													+ ChatColor.DARK_RED
-													+ ChatColor.BOLD + ping
-													+ ChatColor.RESET
-													+ ChatColor.DARK_RED
-													+ " is too high!"
-													+ ChatColor.RESET))
+											.append(" " + formatedAlertMessage))
 											.toString());
 								}
 							}
