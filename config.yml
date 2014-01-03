@@ -23,4 +23,3 @@ AlertThreshold: 500
 
 # AlertInterval: The interval, in minutes, for the alerts to be sent
 AlertInterval: 5
-Interval: 1 
