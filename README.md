@@ -17,6 +17,7 @@ On config.yml you can set:
 * AlertPlayers: Alert players about high latency (Default: true)
 * AlertThreshold: Players with the ping higher than this will be alerted (Default: 500)
 * AlertInterval: The interval, in minutes, for the alerts to be sent (Default: 5)
+* AlertMessage: The message that will be sent to the user on the alert event. Color codes are supported using the & character. Parameters: %playername - Player Name, %ping - Ping Measured, %threshold - Threshold Set. (Default: "%playername, your latency of %ping is above %threshold!")
 
 
 Current Features
@@ -25,17 +26,15 @@ Current Features
 * Support for colored names (This means that if you use a plugin to make the names colored it will work just fine)
 * /ping [player|self] command
 * High latency alerts
-* Permissions
-** SuperPerms
+* SuperPerms Support
 
 Planned Features
 =======
 * Autokick based on measured latency
 * List players on tab based on radius and or limits for big servers
 * List players order by own faction, enemy factions, other factions and lonewolves
-* Permissions
-** PermissionsEx
-** Group Manager
+* PermissionsEx Support
+* Group Manager Support
 
 Won't Work
 =======

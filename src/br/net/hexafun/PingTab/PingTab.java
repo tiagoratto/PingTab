@@ -125,10 +125,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 		if (config.isString("AlertMessage")) {
 			alertMessage = config.getString("AlertMessage");
 		} else {
-			alertMessage = (new StringBuilder(" Your latency of "
-					+ ChatColor.DARK_RED + ChatColor.BOLD + "%p"
-					+ ChatColor.RESET + ChatColor.DARK_RED + " is too high!"
-					+ ChatColor.RESET).toString());
+			alertMessage = "%playername, your latency of %ping is above %threshold!";
 		}
 
 		// Create the Scoreboard and assign an dummy objective to it
