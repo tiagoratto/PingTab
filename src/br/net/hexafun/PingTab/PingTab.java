@@ -2,7 +2,6 @@ package br.net.hexafun.PingTab;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -32,37 +31,91 @@ public final class PingTab extends JavaPlugin implements Listener {
 	protected boolean enabledByDefault = false;
 	protected int alertThreshold = 500;
 	protected String alertMessage;
+	private boolean showPluginName;
+	private boolean coloredPing;
+	private String ownPingMessage;
+	private String pingMessage;
 
 	public PingTab() {
 		super();
 	}
 
+	/*
+	 * Message Related Functions
+	 */
+
 	private String formatPingColor(int ping) {
 		String ret;
 
-		if (ping <= this.goodPing) {
-			ret = (new StringBuilder(ChatColor.GREEN + "" + ChatColor.BOLD)
-					.append(ping).append(ChatColor.RESET + "")).toString();
-		} else if (ping <= this.mediumPing) {
-			ret = (new StringBuilder(ChatColor.GOLD + "" + ChatColor.BOLD)
-					.append(ping).append(ChatColor.RESET + "")).toString();
+		if (this.coloredPing) {
+			if (ping <= this.goodPing) {
+				ret = (new StringBuilder(ChatColor.GREEN + "" + ChatColor.BOLD)
+						.append(ping).append(ChatColor.RESET + "")).toString();
+			} else if (ping <= this.mediumPing) {
+				ret = (new StringBuilder(ChatColor.GOLD + "" + ChatColor.BOLD)
+						.append(ping).append(ChatColor.RESET + "")).toString();
+			} else {
+				ret = (new StringBuilder(ChatColor.RED + "" + ChatColor.BOLD)
+						.append(ping).append(ChatColor.RESET + "")).toString();
+			}
 		} else {
-			ret = (new StringBuilder(ChatColor.RED + "" + ChatColor.BOLD)
-					.append(ping).append(ChatColor.RESET + "")).toString();
+			ret = (new StringBuilder(ChatColor.BOLD + "").append(ping)
+					.append(ChatColor.RESET)).toString();
 		}
 
 		return ret;
 	}
 
-	protected String formatAlertMessage(String msg, int ping, Player player,
-			int threshold) {
-		msg = msg.replaceAll("%ping", new StringBuilder(""+ping).toString());
-		msg = msg.replaceAll("%playername", player.getName());
-		msg = msg.replaceAll("%threshold",new StringBuilder(""+threshold).toString());
-		msg = ChatColor.translateAlternateColorCodes('&', msg);
-
+	private String insertPluginName(String msg) {
+		if (this.showPluginName) {
+			msg = ChatColor.DARK_GREEN + "[PingTab] " + ChatColor.RESET + msg;
+		}
 		return msg;
 	}
+
+	private String formatMessage(String msg) {
+		msg = insertPluginName(msg);
+		msg = ChatColor.translateAlternateColorCodes('&', msg);
+		return msg;
+	}
+
+	/*
+	private String formatMessage(String msg, Player player) {
+		msg = insertPluginName(msg);
+		msg = msg.replaceAll("%playername", player.getName());
+		msg = ChatColor.translateAlternateColorCodes('&', msg);
+		return msg;
+	}
+	*/
+
+	private String formatMessage(String msg, int ping) {
+		msg = insertPluginName(msg);
+		msg = msg.replaceAll("%ping",formatPingColor(ping));
+		msg = ChatColor.translateAlternateColorCodes('&', msg);
+		return msg;
+	}
+
+	private String formatMessage(String msg, int ping, Player player) {
+		msg = insertPluginName(msg);
+		msg = msg.replaceAll("%ping",formatPingColor(ping));
+		msg = msg.replaceAll("%playername", player.getName());
+		msg = ChatColor.translateAlternateColorCodes('&', msg);
+		return msg;
+	}
+
+	protected String formatMessage(String msg, int ping, Player player,
+			int threshold) {
+		msg = insertPluginName(msg);
+		msg = msg.replaceAll("%ping",formatPingColor(ping));
+		msg = msg.replaceAll("%playername", player.getName());
+		msg = msg.replaceAll("%threshold",("" + threshold));
+		msg = ChatColor.translateAlternateColorCodes('&', msg);
+		return msg;
+	}
+
+	/*
+	 * Plugin Section
+	 */
 
 	public void onEnable() {
 		try {
@@ -92,6 +145,24 @@ public final class PingTab extends JavaPlugin implements Listener {
 			timer = config.getInt("Interval");
 		}
 
+		if (config.isBoolean("EnabledByDefault")) {
+			enabledByDefault = config.getBoolean("EnabledByDefault");
+		} else {
+			enabledByDefault = false;
+		}
+
+		if (config.isBoolean("ShowPluginNameOnMessages")) {
+			showPluginName = config.getBoolean("ShowPluginNameOnMessages");
+		} else {
+			showPluginName = true;
+		}
+
+		if (config.isBoolean("ColoredPingParameter")) {
+			coloredPing = config.getBoolean("ColoredPingParameter");
+		} else {
+			coloredPing = true;
+		}
+
 		if (config.isInt("GoodPing")) {
 			this.goodPing = config.getInt("GoodPing");
 		}
@@ -100,10 +171,16 @@ public final class PingTab extends JavaPlugin implements Listener {
 			this.mediumPing = config.getInt("MediumPing");
 		}
 
-		if (config.isBoolean("EnabledByDefault")) {
-			enabledByDefault = config.getBoolean("EnabledByDefault");
+		if (config.isString("OwnPingMessage")) {
+			alertMessage = config.getString("OwnPingMessage");
 		} else {
-			enabledByDefault = false;
+			alertMessage = "Your ping is %ping ms";
+		}
+
+		if (config.isString("PingMessage")) {
+			alertMessage = config.getString("PingMessage");
+		} else {
+			alertMessage = "%playername's ping is %ping ms";
 		}
 
 		boolean alertPlayers = true;
@@ -157,19 +234,11 @@ public final class PingTab extends JavaPlugin implements Listener {
 							for (int i = 0; i < j; i++) {
 								Player player = players[i];
 								int ping = ((CraftPlayer) player).getHandle().ping;
-								String formatedAlertMessage = formatAlertMessage(
-										alertMessage, ping, player,
-										alertThreshold);
 
 								if (ping > alertThreshold) {
-									player.sendMessage((new StringBuilder(""
-											+ ChatColor.DARK_RED
-											+ ChatColor.BOLD)
-											.append("[PingTab]"
-													+ ChatColor.RESET
-													+ ChatColor.DARK_RED)
-											.append(" " + formatedAlertMessage))
-											.toString());
+									player.sendMessage(formatMessage(
+											alertMessage, ping, player,
+											alertThreshold));
 								}
 							}
 						}
@@ -246,41 +315,148 @@ public final class PingTab extends JavaPlugin implements Listener {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
+		boolean canPing = false;
+
 		if (cmd.getName().equalsIgnoreCase("ping")) {
 			if (args.length == 0) {
+				// Ping yourself, but not from console
 				if (sender instanceof Player) {
 					Player player = (Player) sender;
 					int ping = ((CraftPlayer) player).getHandle().ping;
-					sender.sendMessage((new StringBuilder("" + ChatColor.WHITE
-							+ ChatColor.BOLD + "[PingTab]" + ChatColor.RESET
-							+ ChatColor.WHITE + " Your ping is ").append(this
-							.formatPingColor(ping))).toString());
+					sender.sendMessage(formatMessage(ownPingMessage, ping));
 					return true;
 				} else {
-					sender.sendMessage("Sorry, but you cannot ping yourself from console!");
+					sender.sendMessage(formatMessage("Sorry, but you cannot ping yourself from console!"));
 					return true;
+				}
+			} else if (args[0].equalsIgnoreCase("list")) {
+				if (Bukkit.getOnlinePlayers().length == 0) {
+					return true;
+				}
+
+				Player players[];
+				int j = (players = Bukkit.getOnlinePlayers()).length;
+				// String finalList = new String();
+
+				sender.sendMessage(formatMessage("&3============= &2PingTab List &3=============&r"));
+
+				if (sender instanceof Player) {
+					// From game
+					for (int i = 0; i < j; i++) {
+						Player player = players[i];
+						int ping = ((CraftPlayer) player).getHandle().ping;
+
+						if ((((Player) sender).canSee(player))
+								&& (player != null)) {
+							sender.sendMessage(formatMessage("%playername - %ping&r",ping,player));
+						}
+
+					}
+				} else {
+					// From console
+					for (int i = 0; i < j; i++) {
+						Player player = players[i];
+						int ping = ((CraftPlayer) player).getHandle().ping;
+						sender.sendMessage(formatMessage("%ping - %playername&r",ping,player));
+					}
 				}
 			} else {
+				// Ping anyone else
 				Player player = (Player) Bukkit.getPlayer(args[0]);
-				if (player != null) {
-					int ping = ((CraftPlayer) player).getHandle().ping;
-					sender.sendMessage((new StringBuilder("")
-							.append("" + ChatColor.WHITE + ChatColor.BOLD
-									+ "[PingTab]" + ChatColor.RESET
-									+ ChatColor.WHITE)
-							.append(player.getName())
-							.append(" " + ChatColor.RESET + ChatColor.WHITE
-									+ "'s ping is ").append(this
-							.formatPingColor(ping))).toString());
-					return true;
+				if (sender instanceof Player) {
+					// From game
+					if ((((Player) sender).canSee(player)) && (player != null)) {
+						canPing = true;
+					}
 				} else {
-					sender.sendMessage((new StringBuilder("" + ChatColor.WHITE
-							+ ChatColor.BOLD + "[PingTab]" + ChatColor.RESET
-							+ ChatColor.WHITE + "The player ").append(args[0])
-							.append(" was not found!")).toString());
-					return true;
+					// From console
+					if (player != null) {
+						canPing = true;
+					}
+				}
+
+				if (canPing) {
+					int ping = ((CraftPlayer) player).getHandle().ping;
+					sender.sendMessage(formatMessage(pingMessage, ping, player));
+				} else {
+					sender.sendMessage(formatMessage("The player " + args[0]
+							+ " was not found!"));
 				}
 			}
+			return true;
+		} else if (cmd.getName().equalsIgnoreCase("pingtab")) {
+			if ((args.length != 0) && (args[0].equalsIgnoreCase("reload"))) {
+				
+				sender.sendMessage(formatMessage("Reloading PingTab configuration file."));
+				
+				File configFile = new File(getDataFolder(), "config.yml");
+
+				if (!configFile.exists()) {
+					saveDefaultConfig();
+				}
+
+				// Configuration File Parsing
+				FileConfiguration config = YamlConfiguration
+						.loadConfiguration(configFile);
+
+				if (config.isBoolean("EnabledByDefault")) {
+					enabledByDefault = config.getBoolean("EnabledByDefault");
+				} else {
+					enabledByDefault = false;
+				}
+
+				if (config.isBoolean("ShowPluginNameOnMessages")) {
+					showPluginName = config
+							.getBoolean("ShowPluginNameOnMessages");
+				} else {
+					showPluginName = true;
+				}
+
+				if (config.isBoolean("ColoredPingParameter")) {
+					coloredPing = config.getBoolean("ColoredPingParameter");
+				} else {
+					coloredPing = true;
+				}
+
+				if (config.isInt("GoodPing")) {
+					this.goodPing = config.getInt("GoodPing");
+				}
+
+				if (config.isInt("MediumPing")) {
+					this.mediumPing = config.getInt("MediumPing");
+				}
+
+				if (config.isString("OwnPingMessage")) {
+					alertMessage = config.getString("OwnPingMessage");
+				} else {
+					alertMessage = "Your ping is %ping ms";
+				}
+
+				if (config.isString("PingMessage")) {
+					alertMessage = config.getString("PingMessage");
+				} else {
+					alertMessage = "%playername's ping is %ping ms";
+				}
+
+				if (config.isInt("AlertThreshold")) {
+					alertThreshold = config.getInt("AlertThreshold");
+				} else {
+					alertThreshold = 500;
+				}
+
+				if (config.isString("AlertMessage")) {
+					alertMessage = config.getString("AlertMessage");
+				} else {
+					alertMessage = "%playername, your latency of %ping is above %threshold!";
+				}
+				
+				sender.sendMessage(formatMessage("PingTab configuration file reloaded."));
+				
+			} else {
+				sender.sendMessage(formatMessage("Unknown option " + args[0]
+						+ "."));
+			}
+			return true;
 		}
 		return false;
 	}

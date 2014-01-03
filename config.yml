@@ -1,28 +1,59 @@
-# PingTab v1.1.5
+# PingTab v1.2
 
 # Interval: Ping Measurement interval in seconds
 Interval: 3
+
 
 # EnabledByDefault: If the PingTab is enabled to players by default, notice that
 #                   if you enable this setting, it will override any permission
 #                   setting you have done.
 EnabledByDefault: false
 
-# GoodPing: Pings below this number will be printed as green in the /ping command
+
+# ShowPluginNameOnMessages: Show the plugin name on messages sent to the
+#                           and console. Please leave this option enabled so
+#                           more people will know about this plugin!
+ShowPluginNameOnMessages: true
+
+
+# ColoredPingParameter: Make the %ping parameter on messages to be automatically
+#                       colored based on it's value.  
+ColoredPingParameter: true
+
+
+# GoodPing: Pings below this number will be printed as green in the /ping command.
 GoodPing: 200
 
-# MediumPing: Pings below this number will be printed as gold in the /ping command
-#             If the ping gets over this number, it will be printed in red 
+
+# MediumPing: Pings below this number will be printed as gold in the /ping command.
+#             If the ping gets over this number, it will be printed in red .
 MediumPing: 500
+
+
+# OwnPingMessage: Message that is sent to the player when he check it's own
+#                 ping with /ping. Color codes are supported using & character.
+#                 Parameters: %ping - Ping Measured
+OwnPingMessage: "Your ping is %ping ms"
+
+
+# PingMessage: Message that is sent to player when he check anothe player's
+#              ping with /ping. Color codes are supported using & character.
+#              Parameters: %playername - Player Name
+#                          %ping - Ping Measured
+PingMessage: "%playername's ping is %ping ms"
+
 
 # AlertPlayers: Alert players about high latency (Default: true)
 AlertPlayers: true
 
-# AlertThreshold: Players with the ping higher than this will be alerted
+
+# AlertThreshold: Players with the ping higher than this will be alerted.
 AlertThreshold: 500
 
-# AlertInterval: The interval, in minutes, for the alerts to be sent
+
+# AlertInterval: The interval, in minutes, for the alerts to be sent.
 AlertInterval: 5
+
 
 # AlertMessage: The message that will be sent to the user on the alert event.
 #               Color codes are supported using & character.

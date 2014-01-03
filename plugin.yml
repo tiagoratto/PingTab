@@ -1,13 +1,18 @@
 name: PingTab
 main: br.net.hexafun.PingTab.PingTab
-version: 1.1.5
+version: 1.2
 authors: [tiagoratto]
 commands:
+  pingtab:
+    description: Manages the PingTab plugin
+    usage: /pingtab [reload]
+    permission: pingtab.reload
+    permission-message: You don't have permission
   ping:
-    description: Ping yourself or a player
-    usage: /ping [player]
+    description: Ping yourself or a player, also you can list players and their's pings
+    usage: /ping [none|player|list]
     permission: pingtab.ping
-    permission-message: You don't have <permission>
+    permission-message: You don't have permission
 permissions:
   pingtab.*:
     description: Gives access to all pingtab features
@@ -20,3 +25,6 @@ permissions:
   pingtab.ping:
     description: Ping a player or yourself
     default: true
+  pingtab.reload:
+    description: Reload the plugin configuration
+    default: op
