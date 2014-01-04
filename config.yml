@@ -4,10 +4,8 @@
 Interval: 3
 
 
-# EnabledByDefault: If the PingTab is enabled to players by default, notice that
-#                   if you enable this setting, it will override any permission
-#                   setting you have done.
-EnabledByDefault: false
+# DisableTab: Disable the tab portion of the plugin.
+DisableTab: false
 
 
 # ShowPluginNameOnMessages: Show the plugin name on messages sent to the

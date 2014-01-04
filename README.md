@@ -11,7 +11,7 @@ Configuration
 =======
 On config.yml you can set:
 * Interval: Pooling interval in seconds. (Default: 3)
-* EnabledByDefault: Enable the plugin for all users, ignoring any permission plugin. (Default: false)
+* DisableTab: Disable the tab portion of the plugin. (Default: true)
 * GoodPing: Pings below this number will be printed as green in the /ping command. (Default: 200)
 * MediumPing: Pings below this number will be printed as gold in the /ping command. If the ping gets above this number, it will be printed in red. (Default: 500)
 * AlertPlayers: Alert players about high latency (Default: true)
