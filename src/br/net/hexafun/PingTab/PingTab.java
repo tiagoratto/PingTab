@@ -258,7 +258,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 					}, 20 * alertTimer * 60, 20 * alertTimer * 60);
 		}
 
-		if (disableTab) {
+		if (!disableTab) {
 
 			// Create a task so we can update ping values
 			PingTask = Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
