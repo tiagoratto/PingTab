@@ -14,10 +14,12 @@ On config.yml you can set:
 * DisableTab: Disable the tab portion of the plugin. (Default: true)
 * GoodPing: Pings below this number will be printed as green in the /ping command. (Default: 200)
 * MediumPing: Pings below this number will be printed as gold in the /ping command. If the ping gets above this number, it will be printed in red. (Default: 500)
+* OwnPingMessage: Message that is sent to the player when he check it's own ping with /ping. Color codes are supported using & character. Parameters: %ping - Ping Measured (Default: "Your ping is %pingms")
+* PingMessage: Message that is sent to player when he check anothe player's  ping with /ping. Color codes are supported using & character. Parameters: %playername - Player Name; %ping - Ping Measured (Default: "%playername's ping is %pingms")
 * AlertPlayers: Alert players about high latency (Default: true)
-* AlertThreshold: Players with the ping higher than this will be alerted (Default: 500)
+* AlertThreshold: Players with the ping higher than this will be alerted (Default: 1000)
 * AlertInterval: The interval, in minutes, for the alerts to be sent (Default: 5)
-* AlertMessage: The message that will be sent to the user on the alert event. Color codes are supported using the & character. Parameters: %playername - Player Name, %ping - Ping Measured, %threshold - Threshold Set. (Default: "%playername, your latency of %ping is above %threshold!")
+* AlertMessage: The message that will be sent to the user on the alert event. Color codes are supported using the & character. Parameters: %playername - Player Name; %ping - Ping Measured; %threshold - Threshold Set. (Default: "%playername, your latency of %ping is above %threshold!")
 
 
 Current Features

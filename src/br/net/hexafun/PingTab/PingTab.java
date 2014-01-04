@@ -75,6 +75,14 @@ public final class PingTab extends JavaPlugin implements Listener {
 		return msg;
 	}
 
+	private String formatMessage(String msg, boolean showPluginName) {
+		if (showPluginName) {
+			msg = insertPluginName(msg);
+		}
+		msg = ChatColor.translateAlternateColorCodes('&', msg);
+		return msg;
+	}
+
 	/*
 	 * private String formatMessage(String msg, Player player) { msg =
 	 * insertPluginName(msg); msg = msg.replaceAll("%playername",
@@ -91,6 +99,17 @@ public final class PingTab extends JavaPlugin implements Listener {
 
 	private String formatMessage(String msg, int ping, Player player) {
 		msg = insertPluginName(msg);
+		msg = msg.replaceAll("%ping", formatPingColor(ping));
+		msg = msg.replaceAll("%playername", player.getPlayerListName());
+		msg = ChatColor.translateAlternateColorCodes('&', msg);
+		return msg;
+	}
+
+	private String formatMessage(String msg, int ping, Player player,
+			boolean showPluginName) {
+		if (showPluginName) {
+			msg = insertPluginName(msg);
+		}
 		msg = msg.replaceAll("%ping", formatPingColor(ping));
 		msg = msg.replaceAll("%playername", player.getPlayerListName());
 		msg = ChatColor.translateAlternateColorCodes('&', msg);
@@ -333,7 +352,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 				int j = (players = Bukkit.getOnlinePlayers()).length;
 				// String finalList = new String();
 
-				sender.sendMessage(formatMessage("&3============= &2PingTab List &3=============&r"));
+				sender.sendMessage(formatMessage("&3============= &2PingTab List &3=============&r",false));
 
 				if (sender instanceof Player) {
 					// From game
@@ -344,7 +363,8 @@ public final class PingTab extends JavaPlugin implements Listener {
 						if ((((Player) sender).canSee(player))
 								&& (player != null)) {
 							sender.sendMessage(formatMessage(
-									"%playername - %ping&r", ping, player));
+									"%playername - %ping&r", ping, player,
+									false));
 						}
 
 					}
@@ -354,7 +374,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 						Player player = players[i];
 						int ping = ((CraftPlayer) player).getHandle().ping;
 						sender.sendMessage(formatMessage(
-								"%playername - %ping&r", ping, player));
+								"%playername - %ping&r", ping, player, false));
 					}
 				}
 			} else {
@@ -396,8 +416,8 @@ public final class PingTab extends JavaPlugin implements Listener {
 				FileConfiguration config = YamlConfiguration
 						.loadConfiguration(configFile);
 
-				if (config.isBoolean("EnabledByDefault")) {
-					disableTab = config.getBoolean("EnabledByDefault");
+				if (config.isBoolean("DisableTab")) {
+					disableTab = config.getBoolean("DisableTab");
 				} else {
 					disableTab = false;
 				}
