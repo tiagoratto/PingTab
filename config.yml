@@ -14,6 +14,28 @@ DisableTab: false
 ShowPluginNameOnMessages: true
 
 
+# SamplingAmount : Defines the amount of samples used to calculate the average,
+#                  notice that this setting can be tricky, since it can
+#                  significantly increase memory consuption depending on the
+#                  number of players and the amount of samples. Ie:
+#                  - Default:
+#                    100 players * 20 samples * 4 bytes = 8000 bytes or around
+#                    8 KBytes.
+#                  - Changed:
+#                    100 players * 100 samples * 4 bytes = 40000 bytes or around
+#                    40 Kbytes 
+SamplingAmount: 20
+
+
+# TabMode: Defines the mode of measurements shown in the scoreboard and
+#          /ping list command.
+#          They can be:
+#            Instant - Show the last measurement value
+#            Average - Show the average of the last <SamplingAmount> values
+#            Median - Show the median of the last <SamplingAmount> values (Default)
+TabMode: "Median"
+
+
 # ColoredPingParameter: Make the %ping parameter on messages to be automatically
 #                       colored based on it's value.  
 ColoredPingParameter: true
@@ -23,9 +45,25 @@ ColoredPingParameter: true
 GoodPing: 200
 
 
+# GoodPingColor: Sets the color that will be displayed on the ping measured when
+#                it's a good ping. Color codes are supported using & character.
+GoodPingColor: "&2"
+
+
 # MediumPing: Pings below this number will be printed as gold in the /ping command.
-#             If the ping gets over this number, it will be printed in red .
+#             If the ping gets over this number, it will be printed in red
 MediumPing: 500
+
+
+# MediumPingColor: Sets the color that will be displayed on the ping measured
+#                  when it's a medium ping. Color codes are supported using &
+#                  character.
+MediumPingColor: "&e"
+
+
+# BadPingColor: Sets the color that will be displayed on the ping measured when
+#               it's a bad ping. Color codes are supported using & character.
+BadPingColor: "&4"
 
 
 # OwnPingMessage: Message that is sent to the player when he check it's own
@@ -43,6 +81,27 @@ PingMessage: "%playername's ping is %pingms"
 
 # AlertPlayers: Alert players about high latency (Default: true)
 AlertPlayers: true
+
+
+# AlertMode: Defines the mode of measurements used to alert users.
+#            They can be:
+#              Instant - Use the last measurement value.
+#              Average - Use the mean average of the last <SamplingAmount> values.
+#              Median - Use the median of the last <SamplingAmount> values. (Default)
+#              Mode - Use the mode of the last <SamplingAmount> values.
+#                     If there's no repeated measurement, use the Median as
+#                     result.
+#              Midrange - Use the midrange of the last <SamplingAmount> values.
+#              MixedAverage - Use the mean average of the calculated Average,
+#                              Median, Mode and Midrange values.
+#              MixedMedian - Use the median of the calculated Average, Median,
+#                             Mode and Midrange values.
+#              MixedMode - Use the median of the calculated Average, Median,
+#                           Mode and Midrange values. If there's no repeated
+#                           measurement, use the Mixed Median as result.
+#              MixedMidrange - Use the midrange of the calculated Average,
+#                               Median, Mode and Midrange values.
+AlertMode: "Median"
 
 
 # AlertThreshold: Players with the ping higher than this will be alerted.

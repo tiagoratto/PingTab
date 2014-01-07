@@ -37,6 +37,8 @@ Planned Features
 * List players order by own faction, enemy factions, other factions and lonewolves
 * PermissionsEx Support
 * Group Manager Support
+* Multiworld support and scoreboard isolation
+* Alert messages and kick based in the median ping, instead of last measured ping
 
 Won't Work
 =======
