@@ -2,10 +2,10 @@ package br.net.hexafun.PingTab;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.logging.Logger;
 
-final class PlayerPings {
+public class PlayerPings {
 	private String playerName;
 	private ArrayList<Integer> pings;
 	private int average;
@@ -20,9 +20,14 @@ final class PlayerPings {
 	private int smallestPing;
 	private int biggestPing;
 	private int samplingAmount;
-	private int logger;
+	@SuppressWarnings("unused")
+	private Logger logger;
 	
-	// public PlayerPings(CraftPlayer player, int samples) {
+	/**
+	 * @param playerName
+	 * @param samples
+	 * @param logger
+	 */
 	public PlayerPings(String playerName, int samples, Logger logger) {
 		this.playerName = playerName;
 		this.pings = new ArrayList<Integer>();
@@ -40,7 +45,14 @@ final class PlayerPings {
 		this.samplingAmount = samples;
 		this.logger = logger;
 	}
+	
+	public int getCurrentSamples() {
+		return this.pings.size();
+	}
 
+	/**
+	 * @param ping
+	 */
 	public void addPing(int ping) {
 
 		if (this.smallestPing > ping) {
@@ -58,28 +70,33 @@ final class PlayerPings {
 			this.pings.add(ping);
 		}
 
+		this.lastPing = ping;
 		this.average = this.calculateAverage(this.pings);
 		this.median = this.calculateMedian(this.pings);
 		this.midrange = this.calculateMidrange(this.pings);
 		this.mode = this.calculateMode(this.pings);
 		
-		ArrayList<Integer> mixed = new ArrayList<Integer>();
-		
-		mixed.add(this.average);
-		mixed.add(this.median);
-		mixed.add(this.midrange);
-		mixed.add(this.mode);
-		
-		this.mixedAverage = this.calculateAverage(mixed);
-		this.mixedMedian = this.calculateMedian(mixed);
-		this.mixedMidrange = this.calculateMidrange(mixed);
-		this.mixedMode = this.calculateMode(mixed);
+//		ArrayList<Integer> mixed = new ArrayList<Integer>();
+//		
+//		mixed.add(this.average);
+//		mixed.add(this.median);
+//		mixed.add(this.midrange);
+//		mixed.add(this.mode);
+//		
+//		this.mixedAverage = this.calculateAverage(mixed);
+//		this.mixedMedian = this.calculateMedian(mixed);
+//		this.mixedMidrange = this.calculateMidrange(mixed);
+//		this.mixedMode = this.calculateMode(mixed);
 	}
 
+	/**
+	 * @param pings
+	 * @return int
+	 */
 	private int calculateAverage(ArrayList<Integer> pings) {
 		if (!pings.isEmpty()) {
 			int sum = 0;
-			for (Iterator<Integer> it = pings.iterator(); it.hasNext();) {
+			for (ListIterator<Integer> it = pings.listIterator(); it.hasNext();) {
 				sum += it.next();
 			}
 			return sum / pings.size();
@@ -88,48 +105,64 @@ final class PlayerPings {
 		}
 	}
 
+	/**
+	 * @param pings
+	 * @return int
+	 */
 	private int calculateMedian(ArrayList<Integer> pings) {
 		if (!pings.isEmpty()) {
 			ArrayList<Integer> tempList = pings;
 			Collections.sort(tempList);
-			int middle = tempList.size() / 2;
-			if (tempList.size() % 2 == 1) {
+			int middle = (int) (tempList.size() / 2);
+			if (tempList.size() == 1) {
+				return tempList.get(0);
+			} else if (tempList.size() % 2 == 1) {
 				return tempList.get(middle);
 			} else {
-				return (int) Math.ceil(tempList.get(middle - 1)
-						+ tempList.get(middle) / 2);
+				return (int) Math.round((tempList.get(middle - 1)
+						+ tempList.get(middle)) / 2);
 			}
 		} else {
 			return 0;
 		}
 	}
 
+	/**
+	 * @param pings
+	 * @return int
+	 */
 	private int calculateMode(ArrayList<Integer> pings) {
 		if (!pings.isEmpty()) {
-			ArrayList<Integer> tempList = pings;
-			Collections.sort(tempList);
+			ArrayList<Integer> tempList1 = pings;
+			Collections.sort(tempList1);
+			
 			int maxValue = -1, maxCount = 0;
-			int ping1, ping2;
-			for (Iterator<Integer> it = tempList.iterator(); it.hasNext();) {
-				int count = 0;
-				ping1 = it.next();
-				for (Iterator<Integer> itt = tempList.iterator(); it.hasNext();) {
-					ping2 = itt.next();
-					if (ping1 == ping2) {
-						count++;
-					}
+			int ping;
+			ListIterator<Integer> it = tempList1.listIterator();
+			
+			int count = 0;
+			int previousRead = -10000;
+			
+			for (; it.hasNext();) {
+				ping = it.next();
+				if (ping == previousRead) {
+					count++;
+				} else {
+					count = 1;
 				}
+				
 				if (count > maxCount) {
 					maxCount = count;
-					maxValue = ping1;
-				} else if ((count == maxCount) && (ping1 > maxValue)) {
-					maxValue = ping1;
+					maxValue = ping;
+				} else if ((count == maxCount) && (ping > maxValue)) {
+					maxValue = ping;
 				}
-				if (maxCount == 1) {
-					// If there's isn't a repeated measurement value then uses
-					// median as result, that seems fair to me
-					maxValue = this.calculateMedian(this.pings);
-				}
+				previousRead = ping;
+			}
+			if (maxCount == 1) {
+				// If there's isn't a repeated measurement value then uses
+				// median as result, that seems fair to me
+				maxValue = this.calculateMedian(this.pings);
 			}
 			return maxValue;
 		} else {
@@ -137,70 +170,113 @@ final class PlayerPings {
 		}
 	}
 
+	/**
+	 * @param pings
+	 * @return int
+	 */
 	private int calculateMidrange(ArrayList<Integer> pings) {
 		if (!pings.isEmpty()) {
 			if (pings.size() > 1) {
 				ArrayList<Integer> tempList = pings;
 				Collections.sort(tempList);
-				int minValue = tempList.get(1);
-				int maxValue = tempList.get(tempList.size());
-				return (int) Math.ceil(minValue + maxValue / 2);
+				int minValue = tempList.get(0);
+				int maxValue = tempList.get(tempList.size()-1);
+				return (int) (minValue + maxValue) / 2;
 			} else {
-				return pings.get(1);
+				return pings.get(0);
 			}
 		} else {
 			return 0;
 		}
 	}
 
+	/**
+	 * @return String
+	 */
 	public String getPlayerName() {
 		return playerName;
 	}
 
+	/**
+	 * @param playerName
+	 */
 	public void setPlayerName(String playerName) {
 		this.playerName = playerName;
 	}
 
+	/**
+	 * @return int
+	 */
 	public int getAverage() {
 		return average;
 	}
 
+	/**
+	 * @return int
+	 */
 	public int getMedian() {
 		return median;
 	}
 
+	/**
+	 * @return int
+	 */
 	public int getMode() {
 		return mode;
 	}
 
+	/**
+	 * @return int
+	 */
 	public int getMidrange() {
 		return midrange;
 	}
 	
+	/**
+	 * @return int
+	 */
 	public int getMixedAverage() {
 		return mixedAverage;
 	}
 
+	/**
+	 * @return int
+	 */
 	public int getMixedMedian() {
 		return mixedMedian;
 	}
 
+	/**
+	 * @return int
+	 */
 	public int getMixedMode() {
 		return mixedMode;
 	}
 
+	/**
+	 * @return int
+	 */
 	public int getMixedMidrange() {
 		return mixedMidrange;
 	}
 
+	/**
+	 * @return int
+	 */
 	public int getLastPing() {
 		return lastPing;
 	}
 
+	/**
+	 * @return int
+	 */
 	public int getSamplingAmount() {
 		return samplingAmount;
 	}
 
+	/**
+	 * @param samplingAmount
+	 */
 	public void setSamplingAmount(int samplingAmount) {
 		this.samplingAmount = samplingAmount;
 	}

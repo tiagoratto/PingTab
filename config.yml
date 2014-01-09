@@ -30,10 +30,23 @@ SamplingAmount: 20
 # TabMode: Defines the mode of measurements shown in the scoreboard and
 #          /ping list command.
 #          They can be:
-#            Instant - Show the last measurement value
-#            Average - Show the average of the last <SamplingAmount> values
-#            Median - Show the median of the last <SamplingAmount> values (Default)
-TabMode: "Median"
+#            Instant - Use the last measurement value.
+#            Average - Use the mean average of the last <SamplingAmount> values.
+#            Median - Use the median of the last <SamplingAmount> values. (Default)
+#            Mode - Use the mode of the last <SamplingAmount> values.
+#                   If there's no repeated measurement, use the Median as
+#                   result.
+#            Midrange - Use the midrange of the last <SamplingAmount> values.
+#            MixedAverage - Use the mean average of the calculated Average,
+#                           Median, Mode and Midrange values.
+#            MixedMedian - Use the median of the calculated Average, Median,
+#                          Mode and Midrange values.
+#            MixedMode - Use the median of the calculated Average, Median,
+#                        Mode and Midrange values. If there's no repeated
+#                        measurement, use the Mixed Median as result.
+#            MixedMidrange - Use the midrange of the calculated Average,
+#                            Median, Mode and Midrange values.
+TabMode: "Average"
 
 
 # ColoredPingParameter: Make the %ping parameter on messages to be automatically
@@ -72,10 +85,19 @@ BadPingColor: "&4"
 OwnPingMessage: "Your ping is %pingms"
 
 
-# PingMessage: Message that is sent to player when he check anothe player's
+# PingMessage: Message that is sent to player when he check another player's
 #              ping with /ping. Color codes are supported using & character.
 #              Parameters: %playername - Player Name
-#                          %ping - Ping Measured
+#                          %ping - Default ping value set on <TabMode>
+#                          %pingInstant - Last ping measured
+#                          %pingAverage - Mean Average ping measured
+#                          %pingMedian - Median ping measured
+#                          %pingMode - Mode ping measured
+#                          %pingMidrange - Midrange ping measured
+#                          %pingMixedAverage - Mixed average ping measured
+#                          %pingMixedMedian - Mixed median ping measured
+#                          %pingMixedMode - Mixed mode ping measured
+#                          %pingMixedMidrange - Mixed midrange ping measured
 PingMessage: "%playername's ping is %pingms"
 
 
@@ -115,6 +137,15 @@ AlertInterval: 5
 # AlertMessage: The message that will be sent to the user on the alert event.
 #               Color codes are supported using & character.
 #               Parameters: %playername - Player Name
-#                           %ping - Ping Measured
+#                           %ping - Default ping value set on <AlertMode>
+#                           %pingInstant - Instant ping measured
+#                           %pingAverage - Mean Average ping measured
+#                           %pingMedian - Median ping measured
+#                           %pingMode - Mode ping measured
+#                           %pingMidrange - Midrange ping measured
+#                           %pingMixedAverage - Mixed average ping measured
+#                           %pingMixedMedian - Mixed median ping measured
+#                           %pingMixedMode - Mixed mode ping measured
+#                           %pingMixedMidrange - Mixed midrange ping measured
 #                           %threshold - Threshold Set
 AlertMessage: "%playername, your latency of %ping is above %threshold!"
