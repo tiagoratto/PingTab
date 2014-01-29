@@ -1,4 +1,13 @@
-# PingTab v1.2
+# PingTab v1.5
+
+# AutoUpdate: Enable/Disable auto update checking
+AutoUpdate: true
+
+
+# AutoDownloadUpdate: Enable/Disable auto downloading new updates, when disabled warns
+#                     you about new versions
+AutoDownloadUpdate: false
+
 
 # Interval: Ping Measurement interval in seconds
 Interval: 3

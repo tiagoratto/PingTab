@@ -22,6 +22,10 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.mcstats.MetricsLite;
 
+import br.net.hexafun.Updater.Updater;
+import br.net.hexafun.Updater.Updater.UpdateResult;
+import br.net.hexafun.Updater.Updater.UpdateType;
+
 public final class PingTab extends JavaPlugin implements Listener {
 
 	public BukkitTask PingTask;
@@ -48,6 +52,8 @@ public final class PingTab extends JavaPlugin implements Listener {
 	private int samplingAmount;
 	private int tabMode;
 	private int alertMode;
+	private boolean autoUpdate;
+	private boolean autoDownloadUpdate;
 
 	PlayersPings playersPings;
 
@@ -103,28 +109,28 @@ public final class PingTab extends JavaPlugin implements Listener {
 			PlayersPings playersPings, int pingMode) {
 		msg = msg.replaceAll("%playername", player.getPlayerListName());
 
-		int ping = playersPings.getPing((CraftPlayer) player, pingMode);
+		int ping = playersPings.getPing(player.getName(), pingMode);
 
+		msg = msg.replaceAll("%pingInstant",
+				formatPingColor(playersPings.getLastPing(player.getName())));
+		msg = msg.replaceAll("%pingAverage",
+				formatPingColor(playersPings.getAveragePing(player.getName())));
+		msg = msg.replaceAll("%pingMedian",
+				formatPingColor(playersPings.getMedianPing(player.getName())));
+		msg = msg.replaceAll("%pingMode",
+				formatPingColor(playersPings.getModePing(player.getName())));
 		msg = msg
-				.replaceAll("%pingInstant", formatPingColor(playersPings
-						.getLastPing((CraftPlayer) player)));
-		msg = msg.replaceAll("%pingAverage", formatPingColor(playersPings
-				.getAveragePing((CraftPlayer) player)));
-		msg = msg.replaceAll("%pingMedian", formatPingColor(playersPings
-				.getMedianPing((CraftPlayer) player)));
-		msg = msg
-				.replaceAll("%pingMode", formatPingColor(playersPings
-						.getModePing((CraftPlayer) player)));
-		msg = msg.replaceAll("%pingMidrange", formatPingColor(playersPings
-				.getMidrangerPing((CraftPlayer) player)));
+				.replaceAll("%pingMidrange", formatPingColor(playersPings
+						.getMidrangerPing(player.getName())));
 		msg = msg.replaceAll("%pingMixedAverage", formatPingColor(playersPings
-				.getMixedAveragePing((CraftPlayer) player)));
+				.getMixedAveragePing(player.getName())));
 		msg = msg.replaceAll("%pingMixedMedian", formatPingColor(playersPings
-				.getMixedMedianPing((CraftPlayer) player)));
-		msg = msg.replaceAll("%pingMixedMode", formatPingColor(playersPings
-				.getMixedModePing((CraftPlayer) player)));
+				.getMixedMedianPing(player.getName())));
+		msg = msg
+				.replaceAll("%pingMixedMode", formatPingColor(playersPings
+						.getMixedModePing(player.getName())));
 		msg = msg.replaceAll("%pingMixedMidrange", formatPingColor(playersPings
-				.getMixedMidrangePing((CraftPlayer) player)));
+				.getMixedMidrangePing(player.getName())));
 
 		msg = msg.replaceAll("%ping", formatPingColor(ping));
 
@@ -196,6 +202,18 @@ public final class PingTab extends JavaPlugin implements Listener {
 			pingTimer = config.getInt("Interval");
 		} else {
 			pingTimer = 3;
+		}
+
+		if (config.isBoolean("AutoUpdate")) {
+			autoUpdate = config.getBoolean("AutoUpdate");
+		} else {
+			autoUpdate = true;
+		}
+
+		if (config.isBoolean("AutoDownloadUpdate")) {
+			autoDownloadUpdate = config.getBoolean("AutoDownloadUpdate");
+		} else {
+			autoDownloadUpdate = true;
 		}
 
 		if (config.isInt("AlertInterval")) {
@@ -307,8 +325,10 @@ public final class PingTab extends JavaPlugin implements Listener {
 			pingMessage = "%playername's ping is %ping ms";
 		}
 
-		if (config.isInt("AlertPlayers")) {
+		if (config.isBoolean("AlertPlayers")) {
 			alertPlayers = config.getBoolean("AlertPlayers");
+		} else {
+			alertPlayers = false;
 		}
 
 		String alertModeConfig;
@@ -339,6 +359,67 @@ public final class PingTab extends JavaPlugin implements Listener {
 			alertMessage = "%playername, your latency of %ping is above %threshold!";
 		}
 		return true;
+	}
+
+	/*
+	 * Update Section
+	 */
+
+	private String updateResult(UpdateResult result, String lastestVersion) {
+		String msg = "";
+		switch (result) {
+		case SUCCESS:
+			// Success: The updater found an update, and has readied it to
+			// be loaded the next time the server restarts/reloads
+			msg = "Plugin has been updated, restart or reload the server to enable the new version.";
+			break;
+		case NO_UPDATE:
+			// No Update: The updater did not find an update, and nothing
+			// was downloaded.
+			msg = "Plugin is up to date.";
+			break;
+		case DISABLED:
+			msg = "Updater is disabled in its configuration file.";
+			// Won't Update: The updater was disabled in its configuration
+			// file.
+			break;
+		case FAIL_DOWNLOAD:
+			msg = "Download failed!";
+			// Download Failed: The updater found an update, but was unable
+			// to download it.
+			break;
+		case FAIL_DBO:
+			msg = "DBO Failed!";
+			// dev.bukkit.org Failed: For some reason, the updater was
+			// unable to contact DBO to download the file.
+			break;
+		case FAIL_NOVERSION:
+			msg = "No file found with correct name format.";
+			// No version found: When running the version check, the file on
+			// DBO did not contain the a version in the format 'vVersion'
+			// such as 'v1.0'.
+			break;
+		case FAIL_BADID:
+			msg = "Cant find the project Id on DBO.";
+			// Bad id: The id provided by the plugin running the updater was
+			// invalid and doesn't exist on DBO.
+			break;
+		case FAIL_APIKEY:
+			msg = "Invalid API key.";
+			// Bad API key: The user provided an invalid API key for the
+			// updater to use.
+			break;
+		case UPDATE_AVAILABLE:
+			msg = "There's a new version available (" + lastestVersion
+					+ "), please update!";
+			// There was an update found, but because you had the UpdateType
+			// set to NO_DOWNLOAD, it was not downloaded.
+			break;
+		default:
+			msg = "Invalid UpdateResult, please report this error to plugin developers.";
+			break;
+		}
+		return msg;
 	}
 
 	/*
@@ -377,6 +458,22 @@ public final class PingTab extends JavaPlugin implements Listener {
 					"Error loading parameters config, using default settings");
 		}
 
+		if (autoUpdate) {
+			getLogger().info("Checking for new versions...");
+			UpdateType autoDownload;
+			if (autoDownloadUpdate) {
+				autoDownload = Updater.UpdateType.DEFAULT;
+			} else {
+				autoDownload = Updater.UpdateType.NO_DOWNLOAD;
+			}
+			Updater updater = new Updater(this, 71589, this.getFile(),
+					autoDownload, false);
+
+			String result = updateResult(updater.getResult(),
+					updater.getLatestGameVersion());
+			getLogger().info(result);
+		}
+
 		// Create the scoreboard and assign an dummy objective to it
 		PingScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 		NormalScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -404,51 +501,59 @@ public final class PingTab extends JavaPlugin implements Listener {
 							Player players[];
 							int j = (players = Bukkit.getOnlinePlayers()).length;
 							for (int i = 0; i < j; i++) {
-								CraftPlayer player = (CraftPlayer) players[i];
-								int ping = -2;
+								Player player = players[i];
+								int ping = -6;
 								switch (alertMode) {
 								case 0:
-									ping = playersPings.getLastPing(player);
+									ping = playersPings.getLastPing(player
+											.getName());
 									break;
 								case 1:
-									ping = playersPings.getAveragePing(player);
+									ping = playersPings.getAveragePing(player
+											.getName());
 									break;
 								case 2:
-									ping = playersPings.getMedianPing(player);
+									ping = playersPings.getMedianPing(player
+											.getName());
 									break;
 								case 3:
-									ping = playersPings.getModePing(player);
+									ping = playersPings.getModePing(player
+											.getName());
 									break;
 								case 4:
-									ping = playersPings
-											.getMidrangerPing(player);
+									ping = playersPings.getMidrangerPing(player
+											.getName());
 									break;
 								case 5:
 									ping = playersPings
-											.getMixedAveragePing(player);
+											.getMixedAveragePing(player
+													.getName());
 									break;
 								case 6:
 									ping = playersPings
-											.getMixedMedianPing(player);
+											.getMixedMedianPing(player
+													.getName());
 									break;
 								case 7:
-									ping = playersPings
-											.getMixedModePing(player);
+									ping = playersPings.getMixedModePing(player
+											.getName());
 									break;
 								case 8:
 									ping = playersPings
-											.getMixedMidrangePing(player);
+											.getMixedMidrangePing(player
+													.getName());
 									break;
 								default:
-									ping = playersPings.getMedianPing(player);
+									ping = playersPings.getMedianPing(player
+											.getName());
 									break;
 								}
 
 								if (ping > alertThreshold) {
 									player.sendMessage(formatMessage(
 											alertMessage, playersPings,
-											alertMode, (Player) player,
-											alertThreshold, showPluginName));
+											alertMode, player, alertThreshold,
+											showPluginName));
 								}
 							}
 						}
@@ -471,12 +576,15 @@ public final class PingTab extends JavaPlugin implements Listener {
 					Player players[];
 					int j = (players = Bukkit.getOnlinePlayers()).length;
 					for (int i = 0; i < j; i++) {
-						CraftPlayer player = (CraftPlayer) players[i];
-						if (!playersPings.playerExists(player)) {
+						Player player = players[i];
+						if (!playersPings.playerExists(player.getName())) {
+							getLogger().info("add late");
 							playersPings.addPlayer(player.getName());
 						}
-						playersPings.pingPlayer(player);
-						int ping = playersPings.getPing(player, tabMode);
+						playersPings.pingPlayer(player.getName(),
+								((CraftPlayer) player).getHandle().ping);
+						int ping = playersPings.getPing(player.getName(),
+								tabMode);
 
 						Objective PingListObjective = PingScoreboard
 								.getObjective("PingTab");
@@ -519,17 +627,18 @@ public final class PingTab extends JavaPlugin implements Listener {
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent playerJoin) {
-		CraftPlayer player = (CraftPlayer) playerJoin.getPlayer();
+		Player player = playerJoin.getPlayer();
 		playersPings.addPlayer(player.getName());
-		playersPings.pingPlayer(player);
-		int ping = playersPings.getLastPing(player);
+		playersPings.pingPlayer(player.getName(),
+				((CraftPlayer) player).getHandle().ping);
+		int ping = playersPings.getLastPing(player.getName());
 		PingScoreboard.getObjective("PingTab").getScore(player).setScore(ping);
 	}
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent playerQuit) {
 		CraftPlayer player = (CraftPlayer) playerQuit.getPlayer();
-		if (playersPings.playerExists(player)) {
+		if (playersPings.playerExists(player.getName())) {
 			playersPings.removePlayer(player.getName());
 		}
 	}
@@ -707,9 +816,33 @@ public final class PingTab extends JavaPlugin implements Listener {
 					getLogger()
 							.info("PingTab configuration reload error, using defaults.");
 				}
+			} else if (args.length != 0
+					&& args[0].equalsIgnoreCase("checkupdate")) {
+				Updater updater = new Updater(this, 71589, this.getFile(),
+						Updater.UpdateType.NO_DOWNLOAD, false);
+				String result = updateResult(updater.getResult(),
+						updater.getLatestGameVersion());
+				getLogger().info(result);
+				sender.sendMessage(result);
+			} else if (args.length != 0 && args[0].equalsIgnoreCase("update")) {
+				Updater updater = new Updater(this, 71589, this.getFile(),
+						Updater.UpdateType.DEFAULT, false);
+				String result = updateResult(updater.getResult(),
+						updater.getLatestGameVersion());
+				getLogger().info(result);
+				sender.sendMessage(result);
 			} else {
-				sender.sendMessage(formatMessage("Unknown option " + args[0]
-						+ ".", this.showPluginName));
+				if (args.length == 0) {
+					sender.sendMessage(formatMessage(new StringBuilder(
+							"&2PingTab&r &6v" + this.getDescription().getVersion()
+									+ "&r.").toString(), showPluginName));
+				} else {
+					sender.sendMessage(formatMessage((new StringBuilder(
+							"Unknown option "))
+							.append(args[0])
+							.append(". Valid options are &areload&r, &acheckupdate&r, &aupdate&r")
+							.toString(), showPluginName));
+				}
 			}
 			return true;
 		}

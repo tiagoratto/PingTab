@@ -1,10 +1,10 @@
 name: PingTab
 main: br.net.hexafun.PingTab.PingTab
-version: 1.2
+version: 1.5
 authors: [tiagoratto]
 commands:
   pingtab:
-    description: Manages the PingTab plugin
+    description: Manages the PingTab plugin.
     usage: /pingtab [reload]
     permission: pingtab.reload
     permission-message: You don't have permission

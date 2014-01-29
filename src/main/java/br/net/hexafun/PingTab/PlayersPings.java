@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.logging.Logger;
 
-import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
-
 public class PlayersPings {
 	private ArrayList<PlayerPings> players;
 	private int samplingAmount;
@@ -73,13 +71,10 @@ public class PlayersPings {
 	}
 
 	/**
-	 * @param player
-	 *            CraftPlayer
+	 * @param playerName
+	 * @param ping
 	 */
-	public void pingPlayer(CraftPlayer player) {
-		int ping = player.getHandle().ping;
-		String playerName = player.getName();
-
+	public void pingPlayer(String playerName, int ping) {
 		PlayerPings pp;
 
 		for (ListIterator<PlayerPings> it = players.listIterator(); it
@@ -93,12 +88,10 @@ public class PlayersPings {
 	}
 
 	/**
-	 * @param player
-	 *            CraftPlayer
-	 * @return int
+	 * @param playerName
+	 * @return
 	 */
-	public int getLastPing(CraftPlayer player) {
-		String playerName = player.getName();
+	public int getLastPing(String playerName) {
 		int ping = 0;
 
 		PlayerPings pp;
@@ -113,12 +106,10 @@ public class PlayersPings {
 	}
 
 	/**
-	 * @param player
-	 *            CraftPlayer
-	 * @return int
+	 * @param playerName
+	 * @return
 	 */
-	public int getAveragePing(CraftPlayer player) {
-		String playerName = player.getName();
+	public int getAveragePing(String playerName) {
 		int ping = -1;
 
 		PlayerPings pp;
@@ -133,19 +124,17 @@ public class PlayersPings {
 	}
 
 	/**
-	 * @param player
-	 *            CraftPlayer
-	 * @return int
+	 * @param playerName
+	 * @return
 	 */
-	public int getMedianPing(CraftPlayer player) {
-		String playerName = player.getName();
+	public int getMedianPing(String playerName) {
 		int ping = -2;
 
 		PlayerPings pp;
 		ListIterator<PlayerPings> it = players.listIterator();
 		for (; it.hasNext();) {
 			pp = it.next();
-			if (pp.getPlayerName() == playerName) {
+			if (playerName.equals(pp.getPlayerName())) {
 				ping = pp.getMedian();
 			}
 		}
@@ -153,12 +142,10 @@ public class PlayersPings {
 	}
 
 	/**
-	 * @param player
-	 *            CraftPlayer
-	 * @return int
+	 * @param playerName
+	 * @return
 	 */
-	public int getModePing(CraftPlayer player) {
-		String playerName = player.getName();
+	public int getModePing(String playerName) {
 		int ping = -3;
 
 		PlayerPings pp;
@@ -173,12 +160,10 @@ public class PlayersPings {
 	}
 
 	/**
-	 * @param player
-	 *            CraftPlayer
-	 * @return int
+	 * @param playerName
+	 * @return
 	 */
-	public int getMidrangerPing(CraftPlayer player) {
-		String playerName = player.getName();
+	public int getMidrangerPing(String playerName) {
 		int ping = -4;
 
 		PlayerPings pp;
@@ -192,13 +177,7 @@ public class PlayersPings {
 		return ping;
 	}
 
-	/**
-	 * @param player
-	 *            CraftPlayer
-	 * @return int
-	 */
-	public int getMixedAveragePing(CraftPlayer player) {
-		String playerName = player.getName();
+	public int getMixedAveragePing(String playerName) {
 		int ping = -5;
 
 		PlayerPings pp;
@@ -213,12 +192,10 @@ public class PlayersPings {
 	}
 
 	/**
-	 * @param player
-	 *            CraftPlayer
-	 * @return int
+	 * @param playerName
+	 * @return
 	 */
-	public int getMixedMedianPing(CraftPlayer player) {
-		String playerName = player.getName();
+	public int getMixedMedianPing(String playerName) {
 		int ping = -6;
 
 		PlayerPings pp;
@@ -233,12 +210,10 @@ public class PlayersPings {
 	}
 
 	/**
-	 * @param player
-	 *            CraftPlayer
-	 * @return int
+	 * @param playerName
+	 * @return
 	 */
-	public int getMixedModePing(CraftPlayer player) {
-		String playerName = player.getName();
+	public int getMixedModePing(String playerName) {
 		int ping = -7;
 
 		PlayerPings pp;
@@ -253,12 +228,10 @@ public class PlayersPings {
 	}
 
 	/**
-	 * @param player
-	 *            CraftPlayer
-	 * @return int
+	 * @param playerName
+	 * @return
 	 */
-	public int getMixedMidrangePing(CraftPlayer player) {
-		String playerName = player.getName();
+	public int getMixedMidrangePing(String playerName) {
 		int ping = -8;
 
 		PlayerPings pp;
@@ -272,55 +245,59 @@ public class PlayersPings {
 		return ping;
 	}
 
-	public int getPing(CraftPlayer player, int pingMode) {
+	/**
+	 * @param playerName
+	 * @param pingMode
+	 * @return
+	 */
+	public int getPing(String playerName, int pingMode) {
 		int ping;
 		switch (pingMode) {
 		case 0:
-			ping = this.getLastPing((CraftPlayer) player);
+			ping = this.getLastPing(playerName);
 			break;
 		case 1:
-			ping = this.getAveragePing((CraftPlayer) player);
+			ping = this.getAveragePing(playerName);
 			break;
 		case 2:
-			ping = this.getMedianPing((CraftPlayer) player);
+			ping = this.getMedianPing(playerName);
 			break;
 		case 3:
-			ping = this.getModePing((CraftPlayer) player);
+			ping = this.getModePing(playerName);
 			break;
 		case 4:
-			ping = this.getMidrangerPing((CraftPlayer) player);
+			ping = this.getMidrangerPing(playerName);
 			break;
 		case 5:
-			ping = this.getMixedAveragePing((CraftPlayer) player);
+			ping = this.getMixedAveragePing(playerName);
 			break;
 		case 6:
-			ping = this.getMixedMedianPing((CraftPlayer) player);
+			ping = this.getMixedMedianPing(playerName);
 			break;
 		case 7:
-			ping = this.getMixedModePing((CraftPlayer) player);
+			ping = this.getMixedModePing(playerName);
 			break;
 		case 8:
-			ping = this.getMixedMidrangePing((CraftPlayer) player);
+			ping = this.getMixedMidrangePing(playerName);
 			break;
 		default:
-			ping = this.getMedianPing((CraftPlayer) player);
+			ping = this.getMedianPing(playerName);
 			break;
 		}
 		return ping;
 	}
 
 	/**
-	 * @param player
-	 * @return boolean
+	 * @param playerName
+	 * @return
 	 */
-	public boolean playerExists(CraftPlayer player) {
+	public boolean playerExists(String playerName) {
 		PlayerPings pp;
 
 		for (ListIterator<PlayerPings> it = players.listIterator(); it
 				.hasNext();) {
 			pp = it.next();
-			if (pp.getPlayerName() == player.getName()) {
-				players.remove(pp);
+			if (playerName.equals(pp.getPlayerName())) {
 				return true;
 			}
 		}
