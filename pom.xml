@@ -34,7 +34,7 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>crafbukkit</artifactId>
 					<version>1.8.8-R0.1-SNAPSHOT</version>
-					<systemPath>${basedir}/Spigot_Bukkit/craftbukkit-1.8.8.jar</systemPath>
+					<systemPath>${basedir}/../Spigot_Bukkit/craftbukkit-1.8.8.jar</systemPath>
 					<scope>system</scope>
 		</dependency>
 	</dependencies>
