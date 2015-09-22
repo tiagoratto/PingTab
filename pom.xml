@@ -5,12 +5,11 @@
   <version>1.3.2</version>
   <name>PingTab</name>
   <url>http://yourdomainifyouhaveone.com/yourprojectpageifyouhaveone</url>
-  
-  <dependencies>
-    <repository>
+  <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 	</repository>
+  <dependencies>
 	<!--Spigot API-->
 	<dependency>
 			   <groupId>org.spigotmc</groupId>
