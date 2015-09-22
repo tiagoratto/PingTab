@@ -1,0 +1,52 @@
+name: PingTab
+main: br.net.hexafun.PingTab.PingTab
+version: 1.3.2
+authors: [tiagoratto]
+commands:
+  pingtab:
+    description: Manages the PingTab plugin
+    usage: /pingtab [none|reload|checkupdate|update]
+    permission: pingtab.reload
+    permission-message: You don't have permission
+  ping:
+    description: Ping yourself or a player, also you can list players and their's pings
+    usage: /ping [none|player|list]
+    permission: pingtab.ping
+    permission-message: You don't have permission
+permissions:
+  pingtab.*:
+    description: Allow all users to use all commands 
+    children:
+      pingtab: true
+      pingtab.showscoreboard: true
+      pingtab.ping: true
+      pingtab.reload: true
+      pingtab.checkupdate: true
+      pingtab.update: true
+  pingtab.default:
+    description: Default configuration
+    childen:
+      pingtab: true
+      pingtab.showscoreboard: true
+      pingtab.ping: true
+      pingtab.reload: op
+      pingtab.checkupdate: op
+      pingtab.update: op
+  pingtab.showscoreboard:
+    description: Allow a user to show the PingTab scoreboard
+    default: true
+  pingtab.ping:
+    description: Ping a player or yourself
+    default: true
+  pingtab:
+    description: Shows PingTab version.
+    default: true
+  pingtab.reload:
+    description: Reload the plugin configuration
+    default: op
+  pingtab.checkupdate:
+    description: Check for plugin updates
+    default: op
+  pingtab.update:
+    description: Update the plugin if there is an update available
+    default: op 
