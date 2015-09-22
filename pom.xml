@@ -14,6 +14,10 @@
         	<id>spigot-local-repo</id>
 			<url>file://${basedir}/Spigot_Bukkit/</url>
 		</repository>
+		<repository>
+            <id>Plugin Metrics</id>
+            <url>http://repo.mcstats.org/content/repositories/public</url>
+        </repository>
 	</repositories>
 	<dependencies>
 		<!--Spigot API-->
@@ -37,6 +41,12 @@
 					<systemPath>${basedir}/../Spigot_Bukkit/craftbukkit-1.8.8.jar</systemPath>
 					<scope>system</scope>
 		</dependency>
+		<dependency>
+            <groupId>org.mcstats.bukkit</groupId>
+            <artifactId>metrics-lite</artifactId>
+            <version>R7</version>
+            <scope>compile</scope>
+        </dependency>
 	</dependencies>
   	<properties>
     		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -59,6 +69,32 @@
 					<target>1.5</target>
 				</configuration>
 			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <artifactSet>
+                        <includes>
+                            <include>org.mcstats.*:*</include>
+                        </includes>
+                    </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.mcstats</pattern>
+                            <shadedPattern>br.net.hexafun.PingTab</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 </project>
