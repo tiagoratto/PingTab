@@ -55,7 +55,7 @@
 		<sourceDirectory>${basedir}/src/</sourceDirectory>
 		<resources>
 			<resource>
-				<directory>src/resources</directory>
+				<directory>${basedir}/resources</directory>
 				<filtering>true</filtering>
 			</resource>
 		</resources>
