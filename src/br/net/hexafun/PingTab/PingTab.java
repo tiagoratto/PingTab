@@ -2,6 +2,9 @@ package br.net.hexafun.PingTab;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -10,7 +13,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,6 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.*;
 import org.mcstats.MetricsLite;
+
 
 import br.net.hexafun.Updater.Updater;
 import br.net.hexafun.Updater.Updater.UpdateResult;
@@ -40,12 +43,38 @@ public final class PingTab extends JavaPlugin implements Listener {
 	private boolean coloredPing;
 	private String ownPingMessage;
 	private String pingMessage;
+	private String version;
+	private Class<?> craftClass;
 
 	public PingTab() {
 		goodPing = 200;
 		mediumPing = 500;
 		disableTab = true;
 		alertThreshold = 500;
+		version = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(".")+1, Bukkit.getServer().getClass().getPackage().getName().length());
+		try {
+			craftClass = Class.forName("org.bukkit.craftbukkit."+this.version+".entity.CraftPlayer");
+		} catch (ClassNotFoundException e) {
+			getLogger().info("Problems instatiating CraftPlayer");
+			e.printStackTrace();
+		}
+	}
+	
+	private int pingPlayer(Player p) {
+		Object craftPlayer = craftClass.cast(p);
+        Method getHandle;
+        Object ePlayer;
+        Field ping;
+		try {
+			getHandle = craftPlayer.getClass().getMethod("getHandle", new Class[0]);
+			ePlayer = getHandle.invoke(craftPlayer, new Object[0]);
+			ping = ePlayer.getClass().getDeclaredField("ping");
+			return ping.getInt(ePlayer);
+		} catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchFieldException | SecurityException e) {
+			getLogger().info("Problems using CraftPlayer");
+			e.printStackTrace();
+		}
+		return -1;        
 	}
 
 	private String formatPingColor(int ping) {
@@ -248,7 +277,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 							Iterator<? extends Player> it = players.iterator();
 							while (it.hasNext()) {
 								Player player = it.next();
-								int ping = ((CraftPlayer) player).getHandle().ping;
+								int ping = pingPlayer(player);
 								if (ping > alertThreshold)
 									player.sendMessage(formatMessage(
 											alertMessage, ping, player,
@@ -282,7 +311,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 						Iterator<? extends Player> itTmpPlayers = tmpPlayers.iterator();
 						while (itTmpPlayers.hasNext()) {
 							Player tmpPlayer = itTmpPlayers.next();
-							int tmpPing = ((CraftPlayer) tmpPlayer).getHandle().ping;
+							int tmpPing = pingPlayer(player);
 							if (!tmpPlayer.getPlayerListName().equals(tmpPlayer.getName())) {
 								/*
 								player.getScoreboard()
@@ -381,7 +410,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 		Iterator<? extends Player> itPlayers = players.iterator();
 		while (itPlayers.hasNext()) {
 			Player tmpPlayer = itPlayers.next();
-			int tmpPing = ((CraftPlayer) tmpPlayer).getHandle().ping;
+			int tmpPing = pingPlayer(player);
 			if (!tmpPlayer.getPlayerListName().equals(tmpPlayer.getName())) {
 				/*
 				player.getScoreboard()
@@ -414,7 +443,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 			if (args.length == 0)
 				if (sender instanceof Player) {
 					Player player = (Player) sender;
-					int ping = ((CraftPlayer) player).getHandle().ping;
+					int ping = pingPlayer(player);
 					sender.sendMessage(formatMessage(ownPingMessage, ping));
 					return true;
 				} else {
@@ -431,7 +460,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 				if (sender instanceof Player) {
 					while (itPlayers.hasNext()) {
 						Player player = itPlayers.next();
-						int ping = ((CraftPlayer) player).getHandle().ping;
+						int ping = pingPlayer(player);
 						if (((Player) sender).canSee(player) && player != null)
 							sender.sendMessage(formatMessage(
 									"%playername - %ping&r", ping, player,
@@ -441,7 +470,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 				} else {
 					while (itPlayers.hasNext()) {
 						Player player = itPlayers.next();
-						int ping = ((CraftPlayer) player).getHandle().ping;
+						int ping = pingPlayer(player);
 						sender.sendMessage(formatMessage(
 								"%playername - %ping&r", ping, player, false));
 					}
@@ -455,7 +484,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 				} else if (player != null)
 					canPing = true;
 				if (canPing) {
-					int ping = ((CraftPlayer) player).getHandle().ping;
+					int ping = pingPlayer(player);
 					sender.sendMessage(formatMessage(pingMessage, ping, player));
 				} else {
 					sender.sendMessage(formatMessage((new StringBuilder(
