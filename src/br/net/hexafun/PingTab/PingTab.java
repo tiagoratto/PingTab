@@ -311,7 +311,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 						Iterator<? extends Player> itTmpPlayers = tmpPlayers.iterator();
 						while (itTmpPlayers.hasNext()) {
 							Player tmpPlayer = itTmpPlayers.next();
-							int tmpPing = pingPlayer(player);
+							int tmpPing = pingPlayer(tmpPlayer);
 							if (!tmpPlayer.getPlayerListName().equals(tmpPlayer.getName())) {
 								/*
 								player.getScoreboard()
@@ -410,7 +410,7 @@ public final class PingTab extends JavaPlugin implements Listener {
 		Iterator<? extends Player> itPlayers = players.iterator();
 		while (itPlayers.hasNext()) {
 			Player tmpPlayer = itPlayers.next();
-			int tmpPing = pingPlayer(player);
+			int tmpPing = pingPlayer(tmpPlayer);
 			if (!tmpPlayer.getPlayerListName().equals(tmpPlayer.getName())) {
 				/*
 				player.getScoreboard()
