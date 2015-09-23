@@ -1,6 +1,6 @@
 name: PingTab
 main: br.net.hexafun.PingTab.PingTab
-version: 1.3.3
+version: 1.3.4
 authors: [tiagoratto]
 commands:
   pingtab:
