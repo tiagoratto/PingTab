@@ -15,8 +15,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.*;
@@ -411,13 +413,6 @@ public final class PingTab extends JavaPlugin implements Listener {
 			Player tmpPlayer = itPlayers.next();
 			int tmpPing = pingPlayer(tmpPlayer);
 			if (!tmpPlayer.getPlayerListName().equals(tmpPlayer.getName())) {
-				/*
-				player.getScoreboard()
-					.getObjective("PingTab")
-					.getScore(
-							Bukkit.getOfflinePlayer(tmpPlayer
-										.getPlayerListName())).setScore(tmpPing);
-				*/
 				player.getScoreboard()
 					.getObjective("PingTab")
 					.getScore(tmpPlayer.getPlayerListName()).setScore(tmpPing);
@@ -429,13 +424,21 @@ public final class PingTab extends JavaPlugin implements Listener {
 		}
 	}
 
+    @EventHandler(priority= EventPriority.HIGH)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        if (player.getScoreboard().getObjective("PingTab") != null) {
+            player.getScoreboard().getObjective("PingTab").unregister();
+        }
+    }
+
 	@Override
 	public void onDisable() {
         Collection<? extends Player> players = Bukkit.getOnlinePlayers();
         Iterator<? extends Player> itPlayers = players.iterator();
         while (itPlayers.hasNext()) {
             Player tmpPlayer = itPlayers.next();
-            tmpPlayer.getScoreboard().resetScores("PingTab");
+            tmpPlayer.getScoreboard().getObjective("PingTab").unregister();
         }
 		Bukkit.getScheduler().cancelTask(PingTask.getTaskId());
 	}
