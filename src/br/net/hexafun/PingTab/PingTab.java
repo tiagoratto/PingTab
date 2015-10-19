@@ -33,7 +33,6 @@ public final class PingTab extends JavaPlugin implements Listener {
 	private boolean autoDownloadUpdate;
 	public BukkitTask PingTask;
 	public BukkitTask AlertTask;
-	public String PingString;
 	private int goodPing;
 	private int mediumPing;
 	protected boolean disableTab;
@@ -432,6 +431,12 @@ public final class PingTab extends JavaPlugin implements Listener {
 
 	@Override
 	public void onDisable() {
+        Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+        Iterator<? extends Player> itPlayers = players.iterator();
+        while (itPlayers.hasNext()) {
+            Player tmpPlayer = itPlayers.next();
+            tmpPlayer.getScoreboard().resetScores("PingTab");
+        }
 		Bukkit.getScheduler().cancelTask(PingTask.getTaskId());
 	}
 
@@ -563,10 +568,9 @@ public final class PingTab extends JavaPlugin implements Listener {
 				sender.sendMessage(result);
 			} else {
 				if (args.length == 0) {
-					sender.sendMessage(formatMessage(new StringBuilder(
-							"&2PingTab&r &6v"
-									+ this.getDescription().getVersion()
-									+ "&r.").toString(), showPluginName));
+					sender.sendMessage(formatMessage("&2PingTab&r &6v"
+                            + this.getDescription().getVersion()
+                            + "&r.", showPluginName));
 				} else {
 					sender.sendMessage(formatMessage((new StringBuilder(
 							"Unknown option "))
