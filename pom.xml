@@ -31,20 +31,13 @@
 		<dependency>
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
-					<version>1.8.8-R0.1-SNAPSHOT</version>
-					<scope>provided</scope>
-		</dependency>
-        <!--Craftbukkit API-->
-		<dependency>
-					<groupId>org.bukkit</groupId>
-					<artifactId>crafbukkit</artifactId>
-					<version>1.8.8-R0.1-SNAPSHOT</version>
+					<version>1.9-SNAPSHOT</version>
 					<scope>provided</scope>
 		</dependency>
 		<dependency>
             <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics-lite</artifactId>
-            <version>R7</version>
+            <version>R8-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 	</dependencies>
